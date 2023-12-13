@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div>
-      <h1>Comuna App 3</h1>
+      <h1>Comuna App 4</h1>
       User <input type='text' /> <br />
       Pass <input type='text' /> <br />
       <button onClick={() => setMsj("Hello")}>Log in</button> <br />
