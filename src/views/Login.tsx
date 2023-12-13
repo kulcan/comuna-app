@@ -68,7 +68,7 @@ function Login() {
             type="password"
             name="password"
             autoComplete="password"
-            placeholder="********"
+            placeholder="*******"
             value={formState.password}
             onChange={(e) => handleFieldEdit(e, formDispatch)}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none"
