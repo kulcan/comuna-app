@@ -7,7 +7,7 @@ export class AppPaths {
 
 export class AppMessages {
     static UNEXPECTED_ERROR = "An unexpected error has occurred."
-    static UNEXPECTED_EXEPTION = "An unexpected exception has occurred."
+    static UNEXPECTED_EXCEPTION = "An unexpected exception has occurred."
     static NOT_IMPLEMENTED = "Not implemented yet, contact administrator."
 
     static MapFirebaseErrors(error: Error) {
