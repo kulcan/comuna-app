@@ -1,24 +1,17 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
 
 function App() {
+
+  const [msj, setMsj] = useState("")
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Comuna App</h1>
+      User <input type='text' /> <br />
+      Pass <input type='text' /> <br />
+      <button onClick={() => setMsj("Hello!")}>Log in</button> <br />
+      <label>{msj}</label>
     </div>
   );
 }
