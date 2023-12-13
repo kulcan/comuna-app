@@ -10,7 +10,7 @@ function App() {
       <h1>Comuna App</h1>
       User <input type='text' /> <br />
       Pass <input type='text' /> <br />
-      <button onClick={() => setMsj("Hello!")}>Log in</button> <br />
+      <button onClick={() => setMsj("Hello")}>Log in</button> <br />
       <label>{msj}</label>
     </div>
   );
