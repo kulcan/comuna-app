@@ -60,4 +60,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v3
       - name: Assert API Key
-      run: echo ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+        run: echo ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
