@@ -52,7 +52,6 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -60,4 +59,4 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v3
       - name: Assert API Key
-        run: echo ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
+        run: ls
