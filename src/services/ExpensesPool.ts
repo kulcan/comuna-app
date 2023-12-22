@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Timestamp, collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { db } from '../firebase-conf';
+import ExpensesPool from '../views/ExpensesPool';
 
 export type ExpensesPool = {
     id?: string;
@@ -13,6 +14,7 @@ export type ExpensesPool = {
 const useExpensesPoolService = () => {
 
     const [data, setData] = useState<ExpensesPool[]>();
+    const [singleData, setSingleData] =  useState<ExpensesPool>()
     const [loading, setLoading] = useState(true);
 
     const createExpensesPool = async (expensesPool: ExpensesPool) => {
@@ -43,8 +45,30 @@ const useExpensesPoolService = () => {
                 dataQuery.push(doc.data() as ExpensesPool);
             })
             setData(dataQuery);
+            return true;
+        } catch (error) {
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    }
 
-            if (data) {
+    const getExpensesPoolById = async (expensesPoolId: string) => {
+        setLoading(true);
+        try {
+            const expPoRef = collection(db, `expenses-pools`);
+            const q = query(expPoRef, where("id", "==", expensesPoolId));
+            const querySnapshot = await getDocs(q);
+            console.log(querySnapshot)
+            let expensesPool: ExpensesPool | undefined = undefined;
+            if (querySnapshot.size == 1) {
+                querySnapshot.forEach(doc => {
+                    expensesPool = doc.data() as ExpensesPool; 
+                })
+            }
+            setSingleData(expensesPool);
+
+            if (expensesPool) {
                 return true;
             } else {
                 return false;
@@ -56,11 +80,10 @@ const useExpensesPoolService = () => {
         }
     }
 
-
-
     return {
         data, loading,
-        createExpensesPool, getExpensesPoolsByUserId
+        singleData,
+        createExpensesPool, getExpensesPoolsByUserId, getExpensesPoolById
     };
 };
 

@@ -4,7 +4,9 @@ import useUserService from "../services/UserService";
 import { getVal } from "../utils/FormUtils";
 import useExpensesPoolService from "../services/ExpensesPool";
 import { MultiSelect } from "react-multi-select-component";
-import { get } from "http";
+import { Link } from "react-router-dom";
+import { AppPaths } from "../resources/Constants";
+import { isArray } from "util";
 
 const initialValues = {
   friendEmail: "",
@@ -57,7 +59,7 @@ function Home() {
   const handleCreateExpensesPool = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     expensesPoolService.getExpensesPoolsByUserId(getVal(user?.email))
-    const participants = values.selectedFriendsPool.map(({value}) => (value))
+    const participants = values.selectedFriendsPool.map(({ value }) => (value))
     if (participants.length > 0) {
       expensesPoolService.createExpensesPool({
         displayName: values.newPoolName,
@@ -138,13 +140,17 @@ function Home() {
             <table>
               <tbody>
                 {
-                  expensesPoolService.data?.length ?
-                  expensesPoolService.data?.map((pool, index) => {
+                  Array.isArray(expensesPoolService.data) && expensesPoolService.data?.length > 0 ?
+                    expensesPoolService.data?.map((pool, index) => {
                       return (
                         <tr key={index}>
                           <td>{pool.displayName}</td>
                           <td>
-                            <button className="bg-green-500 hover:bg-green-700 text-white text-sm py-0.5 px-2 ml-2 rounded">edit</button>
+                            <button className="bg-green-500 hover:bg-green-700 text-white text-sm py-0.5 px-2 ml-2 rounded">
+                              <Link to={AppPaths.EXPENSE_POOL + `?id=${pool.id}`}>
+                                edit
+                              </Link>
+                            </button>
                             <button className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-0.5 px-2 ml-2 rounded">copy link</button>
                             <button className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded">delete</button>
                           </td>
@@ -163,6 +169,7 @@ function Home() {
                 type="email"
                 name="friendEmail"
                 autoComplete="email"
+                required
                 placeholder="email@domain.com"
                 value={values.friendEmail}
                 onChange={handleInputChange}
