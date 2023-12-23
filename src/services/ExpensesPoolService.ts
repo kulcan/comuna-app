@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Timestamp, collection, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { Timestamp, collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { db } from '../firebase-conf';
-import ExpensesPool from '../views/ExpensesPool';
 
 export type ExpensesPool = {
     id?: string;
@@ -11,10 +10,21 @@ export type ExpensesPool = {
     participantsEmails?: string[];
 }
 
+export type Expense = {
+    id?: string;
+    expensePoolId?: string;
+    concept?: string;
+    amount?: number;
+    date?: Timestamp;
+    appliesToUsers?: string[];
+    paidBy?: string;
+}
+
 const useExpensesPoolService = () => {
 
-    const [data, setData] = useState<ExpensesPool[]>();
-    const [singleData, setSingleData] =  useState<ExpensesPool>()
+    const [data, setData] = useState<ExpensesPool[]>([]);
+    const [singleData, setSingleData] = useState<ExpensesPool>()
+    const [expenses, setExpenses] = useState<Expense[]>([])
     const [loading, setLoading] = useState(true);
 
     const createExpensesPool = async (expensesPool: ExpensesPool) => {
@@ -59,11 +69,10 @@ const useExpensesPoolService = () => {
             const expPoRef = collection(db, `expenses-pools`);
             const q = query(expPoRef, where("id", "==", expensesPoolId));
             const querySnapshot = await getDocs(q);
-            console.log(querySnapshot)
             let expensesPool: ExpensesPool | undefined = undefined;
-            if (querySnapshot.size == 1) {
+            if (querySnapshot.size === 1) {
                 querySnapshot.forEach(doc => {
-                    expensesPool = doc.data() as ExpensesPool; 
+                    expensesPool = doc.data() as ExpensesPool;
                 })
             }
             setSingleData(expensesPool);
@@ -80,10 +89,51 @@ const useExpensesPoolService = () => {
         }
     }
 
+    const addExpense = async (expensePoolId: string, expense: Expense) => {
+        
+        try {
+            const docRef = doc(collection(db, `expenses-pools/${expensePoolId}/expenses`));
+            const newExp = {
+                ...expense,
+                id: docRef.id,
+                expensePoolId: expensePoolId
+            };
+            await setDoc(docRef, newExp);
+            setExpenses((prevEx) => [...prevEx, newExp]);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    const getExpensesFromPoolId = async (expensesPoolId: string) => {
+        setLoading(true);
+        try {
+            const docSnap = await getDocs(collection(db, `expenses-pools/${expensesPoolId}/expenses`));
+            const expData = docSnap.docs.map(doc => doc.data() as Expense);
+            setExpenses(expData);
+            if (expData) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (error) {
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return {
-        data, loading,
+        data,
+        loading,
         singleData,
-        createExpensesPool, getExpensesPoolsByUserId, getExpensesPoolById
+        expenses,
+        createExpensesPool,
+        getExpensesPoolsByUserId,
+        getExpensesPoolById,
+        getExpensesFromPoolId,
+        addExpense
     };
 };
 

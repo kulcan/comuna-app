@@ -2,11 +2,10 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import useAuth from "../hooks/UseAuth"
 import useUserService from "../services/UserService";
 import { getVal } from "../utils/FormUtils";
-import useExpensesPoolService from "../services/ExpensesPool";
+import useExpensesPoolService from "../services/ExpensesPoolService";
 import { MultiSelect } from "react-multi-select-component";
 import { Link } from "react-router-dom";
 import { AppPaths } from "../resources/Constants";
-import { isArray } from "util";
 
 const initialValues = {
   friendEmail: "",
@@ -34,7 +33,7 @@ function Home() {
       [field]: newVal,
     }));
   };
-
+  
   useEffect(() => {
     userService.getUserInfo(getVal(user?.email));
     expensesPoolService.getExpensesPoolsByUserId(getVal(user?.email));

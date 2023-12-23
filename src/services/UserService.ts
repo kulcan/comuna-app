@@ -53,8 +53,10 @@ const useUserService = () => {
     }
 
     return { 
-        data, loading, 
-        setUserInfo, getUserInfo,
+        data,
+        loading, 
+        setUserInfo,
+        getUserInfo,
         addUserFriend
     };
 };
