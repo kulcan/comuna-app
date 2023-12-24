@@ -13,17 +13,17 @@ export type ExpensesPool = {
 export type Expense = {
     id?: string;
     expensePoolId?: string;
-    concept?: string;
-    amount?: number;
-    date?: Timestamp;
-    appliesToUsers?: string[];
-    paidBy?: string;
+    concept: string;
+    amount: number;
+    date: Timestamp;
+    appliesToUsers: string[];
+    paidBy: string;
 }
 
 const useExpensesPoolService = () => {
 
-    const [data, setData] = useState<ExpensesPool[]>([]);
-    const [singleData, setSingleData] = useState<ExpensesPool>()
+    const [userPools, setUserPools] = useState<ExpensesPool[]>([]);
+    const [currentPool, setCurrentPool] = useState<ExpensesPool>()
     const [expenses, setExpenses] = useState<Expense[]>([])
     const [loading, setLoading] = useState(true);
 
@@ -54,7 +54,7 @@ const useExpensesPoolService = () => {
             querySnapshot.forEach(doc => {
                 dataQuery.push(doc.data() as ExpensesPool);
             })
-            setData(dataQuery);
+            setUserPools(dataQuery);
             return true;
         } catch (error) {
             return false;
@@ -66,8 +66,8 @@ const useExpensesPoolService = () => {
     const deleteExpensePoolWithId = async (expensesPoolId: string) => {
         try {
             await deleteDoc(doc(db, `expenses-pools/${expensesPoolId}`));
-            setData((prevData) => {
-                return prevData.filter((exp) => exp.id != expensesPoolId);
+            setUserPools((prevData) => {
+                return prevData.filter((exp) => exp.id !== expensesPoolId);
             });
             return true;
         } catch (error) {
@@ -87,7 +87,7 @@ const useExpensesPoolService = () => {
                     expensesPool = doc.data() as ExpensesPool;
                 })
             }
-            setSingleData(expensesPool);
+            setCurrentPool(expensesPool);
 
             if (expensesPool) {
                 return true;
@@ -140,7 +140,7 @@ const useExpensesPoolService = () => {
         try {
             await deleteDoc(doc(db, `expenses-pools/${expensesPoolId}/expenses/${expenseId}`));
             setExpenses((prevEx) => {
-                return prevEx.filter((exp) => exp.id != expenseId);
+                return prevEx.filter((exp) => exp.id !== expenseId);
             });
             return true;
         } catch (error) {
@@ -149,9 +149,9 @@ const useExpensesPoolService = () => {
     }
 
     return {
-        data,
+        userPools,
         loading,
-        singleData,
+        currentPool,
         expenses,
         createExpensesPool,
         getExpensesPoolsByUserId,

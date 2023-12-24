@@ -35,18 +35,21 @@ function Home() {
   };
   
   useEffect(() => {
+    console.log("email",user?.email, user?.displayName)
     userService.getUserInfo(getVal(user?.email));
     expensesPoolService.getExpensesPoolsByUserId(getVal(user?.email));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     if (userService.data === undefined && !userService.loading) {
       console.log("no data for user, updating...")
       userService.setUserInfo(getVal(user?.email), {
-        displayName: getVal(user?.displayName),
+        displayName: user?.displayName || getVal(user?.email),
         friends: []
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userService.data, userService.loading])
 
   const handleAddFriend = (e: React.FormEvent<HTMLFormElement>) => {
@@ -135,8 +138,8 @@ function Home() {
             <table>
               <tbody>
                 {
-                  Array.isArray(expensesPoolService.data) && expensesPoolService.data?.length > 0 ?
-                    expensesPoolService.data?.map((pool, index) => {
+                  Array.isArray(expensesPoolService.userPools) && expensesPoolService.userPools?.length > 0 ?
+                    expensesPoolService.userPools?.map((pool, index) => {
                       return (
                         <tr key={index}>
                           <td>{pool.displayName}</td>
