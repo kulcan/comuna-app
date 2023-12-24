@@ -65,7 +65,7 @@ const useUserService = () => {
             setData((prevData) => {
                 return {
                     ...prevData, 
-                    friends: prevData?.friends?.filter(friend => friend != friendId) 
+                    friends: prevData?.friends?.filter(friend => friend !== friendId) 
                 }
             })
             return true;
