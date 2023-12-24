@@ -83,11 +83,7 @@ function Home() {
           spending plan or tasks account to share with other users of the app, remember that your unique
           identifier to share with other users is your email <button
             className="text-blue-700 text-decoration-line: underline"
-            onClick={() => {
-              if (user?.email != null) {
-                navigator.clipboard.writeText(user?.email)
-              }
-            }}>
+            onClick={() => navigator.clipboard.writeText(getVal(user?.email))}>
             {user?.email}
           </button>
           (click to copy)
@@ -147,11 +143,19 @@ function Home() {
                           <td>
                             <button className="bg-green-500 hover:bg-green-700 text-white text-sm py-0.5 px-2 ml-2 rounded">
                               <Link to={AppPaths.EXPENSE_POOL + `?id=${pool.id}`}>
-                                edit
+                                manage
                               </Link>
                             </button>
-                            <button className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-0.5 px-2 ml-2 rounded">copy link</button>
-                            <button className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded">delete</button>
+                            <button 
+                              className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
+                              onClick={() => navigator.clipboard.writeText(getVal(pool.id))}>
+                                copy id
+                            </button>
+                            <button 
+                              className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
+                              onClick={() => expensesPoolService.deleteExpensePoolWithId(getVal(pool.id))}>
+                                delete
+                              </button>
                           </td>
                         </tr>
                       )
@@ -188,7 +192,11 @@ function Home() {
                         <tr key={index}>
                           <td>{friend}</td>
                           <td>
-                            <button className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded">delete</button>
+                            <button 
+                              className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
+                              onClick={() => userService.deleteUserFriend(getVal(user?.email), friend) }>
+                              delete
+                            </button>
                           </td>
                         </tr>
                       )

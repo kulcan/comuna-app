@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { getVal } from "../utils/FormUtils";
 import { MultiSelect } from "react-multi-select-component";
 import { Timestamp } from "firebase/firestore";
+import { calculateDebt } from "../utils/ExpensesUtils";
 
 const initialValues = {
   paidBy: "",
@@ -41,8 +42,14 @@ function ExpensesPool() {
   useEffect(() => {
     expensesPoolService.getExpensesPoolById(poolId);
     expensesPoolService.getExpensesFromPoolId(poolId);
-    setValue("paidBy", user?.email)
+    setValue("paidBy", user?.email);
   }, []);
+
+  useEffect(() => {
+    if (expensesPoolService.expenses && expensesPoolService.singleData?.participantsEmails) {
+      console.log(calculateDebt(expensesPoolService.expenses, getVal(expensesPoolService.singleData?.participantsEmails)));
+    }
+  }, [expensesPoolService.expenses])
 
   const handleAddExpense = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,6 +61,9 @@ function ExpensesPool() {
         appliesToUsers: values.appliesToUsers.map(({ value }) => (value)),
         paidBy: getVal(user?.email)
       });
+      setValue("amount", "");
+      setValue("concept", "");
+      setValue("appliesToUsers", []);
     }
   }
 
@@ -119,45 +129,53 @@ function ExpensesPool() {
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 light:text-gray-400">
           <thead className="text-xs text-gray-700 uppercase bg-gray-50 light:bg-gray-700 light:text-gray-400">
             <tr>
-            <th scope="col" className="px-6 py-3">Paid by</th>
+              <th scope="col" className="px-6 py-3">Paid by</th>
               <th scope="col" className="px-6 py-3">Concept</th>
               <th scope="col" className="px-6 py-3">Amount</th>
               <th scope="col" className="px-6 py-3">Date</th>
               <th scope="col" className="px-6 py-3">Applies to</th>
+              <th scope="col" className="px-6 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {
-              expensesPoolService.expenses.length > 0?
-              expensesPoolService.expenses?.map(expense => (
-                <tr className="bg-white border-b light:bg-gray-800 light:border-gray-700" key={expense.id}>
-                  <td className="px-6 py-4">
-                    {expense.paidBy}
-                  </td>
-                  <td className="px-6 py-4">
-                    {expense.concept}
-                  </td>
-                  <td className="px-6 py-4">
-                    {expense.amount}
-                  </td>
-                  <td className="px-6 py-4">
-                    { expense.date?.toDate().toLocaleDateString() }
-                  </td>
-                  <td className="px-6 py-4">
-                    <ul>
-                      {
-                        expense.appliesToUsers?.map(usr => (
-                          <li key={usr}>{usr}</li>
-                        ))
-                      }
-                    </ul>
-                  </td>
-                </tr>
-              )) : (
-                <tr className="bg-white border-b light:bg-gray-800 light:border-gray-700 text-center">
-                  <td colSpan={5}>Nothing to show :c</td>
-                </tr>
-              )
+              expensesPoolService.expenses.length > 0 ?
+                expensesPoolService.expenses?.map(expense => (
+                  <tr className="bg-white border-b light:bg-gray-800 light:border-gray-700" key={expense.id}>
+                    <td className="px-6 py-4">
+                      {expense.paidBy}
+                    </td>
+                    <td className="px-6 py-4">
+                      {expense.concept}
+                    </td>
+                    <td className="px-6 py-4">
+                      ${expense.amount}
+                    </td>
+                    <td className="px-6 py-4">
+                      {expense.date?.toDate().toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4">
+                      <ul>
+                        {
+                          expense.appliesToUsers?.map(usr => (
+                            <li key={usr}>{usr}</li>
+                          ))
+                        }
+                      </ul>
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
+                        onClick={() => expensesPoolService.deleteExpenseWithId(getVal(expense.expensePoolId), getVal(expense.id))}>
+                        delete
+                      </button>
+                    </td>
+                  </tr>
+                )) : (
+                  <tr className="bg-white border-b light:bg-gray-800 light:border-gray-700 text-center">
+                    <td colSpan={5}>Nothing to show :c</td>
+                  </tr>
+                )
             }
           </tbody>
         </table>

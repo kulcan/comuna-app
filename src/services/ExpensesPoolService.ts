@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Timestamp, collection, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { Timestamp, collection, deleteDoc, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { db } from '../firebase-conf';
 
 export type ExpensesPool = {
@@ -63,6 +63,18 @@ const useExpensesPoolService = () => {
         }
     }
 
+    const deleteExpensePoolWithId = async (expensesPoolId: string) => {
+        try {
+            await deleteDoc(doc(db, `expenses-pools/${expensesPoolId}`));
+            setData((prevData) => {
+                return prevData.filter((exp) => exp.id != expensesPoolId);
+            });
+            return true;
+        } catch (error) {
+            return false;
+        } 
+    }
+
     const getExpensesPoolById = async (expensesPoolId: string) => {
         setLoading(true);
         try {
@@ -124,6 +136,18 @@ const useExpensesPoolService = () => {
         }
     }
 
+    const deleteExpenseWithId = async (expensesPoolId: string, expenseId: string) => {
+        try {
+            await deleteDoc(doc(db, `expenses-pools/${expensesPoolId}/expenses/${expenseId}`));
+            setExpenses((prevEx) => {
+                return prevEx.filter((exp) => exp.id != expenseId);
+            });
+            return true;
+        } catch (error) {
+            return false;
+        } 
+    }
+
     return {
         data,
         loading,
@@ -131,9 +155,11 @@ const useExpensesPoolService = () => {
         expenses,
         createExpensesPool,
         getExpensesPoolsByUserId,
+        deleteExpensePoolWithId,
         getExpensesPoolById,
         getExpensesFromPoolId,
-        addExpense
+        addExpense,
+        deleteExpenseWithId
     };
 };
 
