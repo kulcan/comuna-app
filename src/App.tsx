@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { AppPaths } from './resources/Constants'
 import Navbar from './components/Navbar'
 import PageNotFound from './views/PageNotFound'
+import ExpensesPoolView from './views/ExpensesPool'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Routes>
             {/* Protected Routes */}
             <Route path={AppPaths.HOME} element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            <Route path={AppPaths.EXPENSE_POOL} element={<ProtectedRoute><ExpensesPoolView/></ProtectedRoute>} />
             {/* Normal Routes */}
             <Route path={AppPaths.ANY} element={<PageNotFound />} />
             {/* Non Reachable After Login Routes */}

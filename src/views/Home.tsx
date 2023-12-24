@@ -2,9 +2,10 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 import useAuth from "../hooks/UseAuth"
 import useUserService from "../services/UserService";
 import { getVal } from "../utils/FormUtils";
-import useExpensesPoolService from "../services/ExpensesPool";
+import useExpensesPoolService from "../services/ExpensesPoolService";
 import { MultiSelect } from "react-multi-select-component";
-import { get } from "http";
+import { Link } from "react-router-dom";
+import { AppPaths } from "../resources/Constants";
 
 const initialValues = {
   friendEmail: "",
@@ -32,20 +33,23 @@ function Home() {
       [field]: newVal,
     }));
   };
-
+  
   useEffect(() => {
+    console.log("email",user?.email, user?.displayName)
     userService.getUserInfo(getVal(user?.email));
     expensesPoolService.getExpensesPoolsByUserId(getVal(user?.email));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     if (userService.data === undefined && !userService.loading) {
       console.log("no data for user, updating...")
       userService.setUserInfo(getVal(user?.email), {
-        displayName: getVal(user?.displayName),
+        displayName: user?.displayName || getVal(user?.email),
         friends: []
       })
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userService.data, userService.loading])
 
   const handleAddFriend = (e: React.FormEvent<HTMLFormElement>) => {
@@ -57,7 +61,7 @@ function Home() {
   const handleCreateExpensesPool = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     expensesPoolService.getExpensesPoolsByUserId(getVal(user?.email))
-    const participants = values.selectedFriendsPool.map(({value}) => (value))
+    const participants = values.selectedFriendsPool.map(({ value }) => (value))
     if (participants.length > 0) {
       expensesPoolService.createExpensesPool({
         displayName: values.newPoolName,
@@ -82,11 +86,7 @@ function Home() {
           spending plan or tasks account to share with other users of the app, remember that your unique
           identifier to share with other users is your email <button
             className="text-blue-700 text-decoration-line: underline"
-            onClick={() => {
-              if (user?.email != null) {
-                navigator.clipboard.writeText(user?.email)
-              }
-            }}>
+            onClick={() => navigator.clipboard.writeText(getVal(user?.email))}>
             {user?.email}
           </button>
           (click to copy)
@@ -138,15 +138,27 @@ function Home() {
             <table>
               <tbody>
                 {
-                  expensesPoolService.data?.length ?
-                  expensesPoolService.data?.map((pool, index) => {
+                  Array.isArray(expensesPoolService.userPools) && expensesPoolService.userPools?.length > 0 ?
+                    expensesPoolService.userPools?.map((pool, index) => {
                       return (
                         <tr key={index}>
                           <td>{pool.displayName}</td>
                           <td>
-                            <button className="bg-green-500 hover:bg-green-700 text-white text-sm py-0.5 px-2 ml-2 rounded">edit</button>
-                            <button className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-0.5 px-2 ml-2 rounded">copy link</button>
-                            <button className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded">delete</button>
+                            <button className="bg-green-500 hover:bg-green-700 text-white text-sm py-0.5 px-2 ml-2 rounded">
+                              <Link to={AppPaths.EXPENSE_POOL + `?id=${pool.id}`}>
+                                manage
+                              </Link>
+                            </button>
+                            <button 
+                              className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
+                              onClick={() => navigator.clipboard.writeText(getVal(pool.id))}>
+                                copy id
+                            </button>
+                            <button 
+                              className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
+                              onClick={() => expensesPoolService.deleteExpensePoolWithId(getVal(pool.id))}>
+                                delete
+                              </button>
                           </td>
                         </tr>
                       )
@@ -163,6 +175,7 @@ function Home() {
                 type="email"
                 name="friendEmail"
                 autoComplete="email"
+                required
                 placeholder="email@domain.com"
                 value={values.friendEmail}
                 onChange={handleInputChange}
@@ -182,7 +195,11 @@ function Home() {
                         <tr key={index}>
                           <td>{friend}</td>
                           <td>
-                            <button className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded">delete</button>
+                            <button 
+                              className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
+                              onClick={() => userService.deleteUserFriend(getVal(user?.email), friend) }>
+                              delete
+                            </button>
                           </td>
                         </tr>
                       )

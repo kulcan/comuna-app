@@ -1,6 +1,7 @@
 export class AppPaths {
     static ANY = "*"
     static HOME = "/comuna-app"
+    static EXPENSE_POOL = "/expense-pool"
     static LOGIN ="/login"
     static REGISTER = "/register"
 }

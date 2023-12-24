@@ -26,3 +26,7 @@ Fiestore CRUD with React Tutorial (Spanish)
 
 Deploy react app into GitHub Pages
 * https://youtu.be/Q9n2mLqXFpU?si=zrGKMOyXo0o1nKqV
+
+## External components
+* https://www.npmjs.com/package/react-multi-select-component
+* https://www.npmjs.com/package/react-editable-label

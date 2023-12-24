@@ -45,22 +45,10 @@ function Navbar() {
             <div className={`w-full block flex-grow lg:flex lg:items-center lg:w-auto ${isMenuOpen ? '' : 'hidden'}`}>
                 <div className="text-sm lg:flex-grow">
                     <Link 
-                        to="#responsive-header" 
+                        to={AppPaths.HOME}
                         onClick={closeMenu} 
                         className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-                        Docs
-                    </Link>
-                    <Link 
-                        to="#responsive-header" 
-                        onClick={closeMenu} 
-                        className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white mr-4">
-                        Examples
-                    </Link>
-                    <Link 
-                        to="#responsive-header" 
-                        onClick={closeMenu} 
-                        className="block mt-4 lg:inline-block lg:mt-0 text-teal-200 hover:text-white">
-                        Blog
+                        Control panel
                     </Link>
                 </div>
                 <div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { arrayUnion, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import { arrayRemove, arrayUnion, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase-conf';
 
 export type User = {
@@ -45,17 +45,42 @@ const useUserService = () => {
             await updateDoc(doc(db, `users/${userId}`), {
                 friends: arrayUnion(friendId)
             });
-            getUserInfo(userId);
+            setData((prevData) => {
+                return {
+                    ...prevData, 
+                    friends: [...prevData?.friends || [], friendId]
+                }
+            })
             return true;
         } catch (error) {
             return false;
         }
     }
 
+    const deleteUserFriend = async (userId: string, friendId: string) => {
+        try {
+            await updateDoc(doc(db, `users/${userId}`), {
+                friends: arrayRemove(friendId)
+            });
+            setData((prevData) => {
+                return {
+                    ...prevData, 
+                    friends: prevData?.friends?.filter(friend => friend != friendId) 
+                }
+            })
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
+
     return { 
-        data, loading, 
-        setUserInfo, getUserInfo,
-        addUserFriend
+        data,
+        loading, 
+        setUserInfo,
+        getUserInfo,
+        addUserFriend,
+        deleteUserFriend
     };
 };
 
