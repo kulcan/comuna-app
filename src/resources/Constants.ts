@@ -1,9 +1,10 @@
 export class AppPaths {
     static ANY = "*"
     static HOME = "/comuna-app"
-    static EXPENSE_POOL = "/expense-pool"
-    static LOGIN ="/login"
-    static REGISTER = "/register"
+    static EXPENSE_POOL = this.HOME + "/expense-pool"
+    static LOGIN = this.HOME + "/login"
+    static REGISTER = this.HOME + "/register"
+    static RESET_PASSWORD = this.HOME + "/reset-password"
 }
 
 export class AppMessages {

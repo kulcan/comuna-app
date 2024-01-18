@@ -54,8 +54,6 @@ export const calculatePaymentOrder = (expenses: Expense[], participantsEmails: s
         }
     })
 
-    console.log(debtors, contributors);
-
     const debtorsPaymentOrder = new Map<string, string>();
 
     let i = 0, j = 0;
