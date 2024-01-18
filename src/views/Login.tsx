@@ -90,6 +90,8 @@ function Login() {
         Login with Google
       </button>
 
+      <p className="my-4 text-sm flex justify-center">Forgot your password?,&nbsp;<Link to={AppPaths.RESET_PASSWORD} className="text-blue-700 text-decoration-line: underline">Reset password</Link>.</p>
+
     </div>
   )
 }

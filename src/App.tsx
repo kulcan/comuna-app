@@ -8,6 +8,7 @@ import { AppPaths } from './resources/Constants'
 import Navbar from './components/Navbar'
 import PageNotFound from './views/PageNotFound'
 import ExpensesPoolView from './views/ExpensesPool'
+import ResetPassword from './views/ResetPassword'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             {/* Non Reachable After Login Routes */}
             <Route path={AppPaths.LOGIN} element={<Login />} />
             <Route path={AppPaths.REGISTER} element={<Register />} />
+            <Route path={AppPaths.RESET_PASSWORD} element={<ResetPassword />} />
           </Routes>
         </div>
       </div>

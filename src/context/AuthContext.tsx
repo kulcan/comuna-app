@@ -8,7 +8,8 @@ import {
     User,
     GoogleAuthProvider,
     FacebookAuthProvider,
-    signInWithPopup
+    signInWithPopup,
+    sendPasswordResetEmail,
 } from "firebase/auth"
 import { firebaseAuth } from "../firebase-conf"
 import { ILoginUserForm, IRegisterUserForm } from "../interfaces/FormsInterfaces"
@@ -21,6 +22,7 @@ interface IAuthContextProps {
     loginWithEmailPass: (userRegisterForm: ILoginUserForm) => Promise<UserCredential>
     loginWithGoogle: () => void
     loginWithFacebook: () => void
+    resetPassword: (email: string) => void
     logout: () => Promise<void>
 }
 
@@ -31,6 +33,7 @@ export const AuthContext = createContext<IAuthContextProps>({
     loginWithEmailPass: () => { throw new Error(AppMessages.NOT_IMPLEMENTED) },
     loginWithGoogle: () => { throw new Error(AppMessages.NOT_IMPLEMENTED) },
     loginWithFacebook: () => { throw new Error(AppMessages.NOT_IMPLEMENTED) },
+    resetPassword: () => { throw new Error(AppMessages.NOT_IMPLEMENTED) },
     logout: () => { throw new Error(AppMessages.NOT_IMPLEMENTED) }
 })
 
@@ -70,6 +73,10 @@ export const AuthContextProvider = ({ children }: IAuthContextProviderProps) => 
         return signInWithPopup(firebaseAuth, facebookProvider)
     }
 
+    const resetPassword = (email: string) => {
+        return sendPasswordResetEmail(firebaseAuth, email);
+    }
+
     const logout = () => {
         return signOut(firebaseAuth)
     }
@@ -82,7 +89,8 @@ export const AuthContextProvider = ({ children }: IAuthContextProviderProps) => 
             loginWithEmailPass,
             loginWithGoogle,
             loginWithFacebook,
-            logout
+            resetPassword,
+            logout,
         }}>
             { children }
         </AuthContext.Provider>
