@@ -5,7 +5,8 @@ import { useSearchParams } from "react-router-dom";
 import { getVal } from "../utils/FormUtils";
 import { MultiSelect } from "react-multi-select-component";
 import { Timestamp } from "firebase/firestore";
-import { calculateContributions, calculateDebt, calculatePaymentOrder } from "../utils/ExpensesUtils";
+import { calculateContributions, calculateDebt, calculatePaymentOrder, getStr } from "../utils/ExpensesUtils";
+import { AppMessages } from "../resources/Constants";
 
 const initialValues = {
   paidBy: "",
@@ -152,7 +153,9 @@ function ExpensesPool() {
           <tbody>
             {
               expensesPoolService.expenses.length > 0 ?
-                expensesPoolService.expenses?.map(expense => (
+                expensesPoolService.expenses?.sort((exp1, exp2) => {
+                  return exp2.date.seconds - exp1.date.seconds;
+                }).map(expense => (
                   <tr className="bg-white border-b light:bg-gray-800 light:border-gray-700" key={expense.id}>
                     <td className="px-6 py-4">
                       {expense.paidBy}
@@ -178,7 +181,12 @@ function ExpensesPool() {
                     <td className="px-6 py-4">
                       <button
                         className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
-                        onClick={() => expensesPoolService.deleteExpenseWithId(getVal(expense.expensePoolId), getVal(expense.id))}>
+                        onClick={() => { 
+                          if (window.confirm(
+                            `${AppMessages.SURE_TO_DELETE_ITEM}\n${getStr(expense)}`)) {
+                            expensesPoolService.deleteExpenseWithId(getVal(expense.expensePoolId), getVal(expense.id));
+                          }
+                        }}>
                         delete
                       </button>
                     </td>

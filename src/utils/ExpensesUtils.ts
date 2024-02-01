@@ -85,3 +85,7 @@ export const calculatePaymentOrder = (expenses: Expense[], participantsEmails: s
     }
     return debtorsPaymentOrder;
 }
+
+export const getStr = (expense: Expense) => {
+    return `${expense.concept} - $${expense.amount}`;
+}
