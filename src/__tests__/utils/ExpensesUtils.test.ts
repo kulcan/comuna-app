@@ -42,4 +42,17 @@ describe("calculatePaymentOrder", () => {
         expect(paymentOrder.get("user2")).toEqual("please pay 186.5 to user3\nplease pay 302.25 to user4");
     });
 
+    test("some users do not participate in transactions", () => {
+        const expenses = [
+            { paidBy: "user1", concept: "", amount: 150, date: Timestamp.now(), appliesToUsers: ["user2"] },
+            { paidBy: "user1", concept: "", amount: 133, date: Timestamp.now(), appliesToUsers: ["user3"] },
+            { paidBy: "user2", concept: "", amount: 30, date: Timestamp.now(), appliesToUsers: ["user1", "user2", "user3"] },
+            { paidBy: "user2", concept: "", amount: 120, date: Timestamp.now(), appliesToUsers: ["user1", "user2", "user3"] },
+        ];
+        const participants = ["user1", "user2", "user3", "user4", "user5"];
+        const paymentOrder = calculatePaymentOrder(expenses, participants);
+        expect(paymentOrder.get("user3")).toEqual("please pay 183 to user1")
+        expect(paymentOrder.get("user2")).toEqual("please pay 50 to user1");
+    });
+
 });

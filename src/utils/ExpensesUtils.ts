@@ -67,20 +67,23 @@ export const calculatePaymentOrder = (expenses: Expense[], participantsEmails: s
             debtors[j].value -= contributors[i].value;
             amountToPay = contributors[i].value;
         }
-        if (debtorsPaymentOrder.has(debtors[j].userId)) {
-            const prevVal = debtorsPaymentOrder.get(debtors[j].userId);
-            debtorsPaymentOrder.set(debtors[j].userId,
-                prevVal + `\nplease pay ${amountToPay} to ${contributors[i].userId}`);
+        amountToPay = Number(amountToPay.toFixed(2));
+        if (amountToPay > 0) {
+            if (debtorsPaymentOrder.has(debtors[j].userId)) {
+                const prevVal = debtorsPaymentOrder.get(debtors[j].userId);
                 debtorsPaymentOrder.set(debtors[j].userId,
                     prevVal + `\nplease pay ${amountToPay} to ${contributors[i].userId}`);
-        } else {
-            debtorsPaymentOrder.set(debtors[j].userId,
-                `please pay ${amountToPay} to ${contributors[i].userId}`);
+                debtorsPaymentOrder.set(debtors[j].userId,
+                    prevVal + `\nplease pay ${amountToPay} to ${contributors[i].userId}`);
+            } else {
+                debtorsPaymentOrder.set(debtors[j].userId,
+                    `please pay ${amountToPay} to ${contributors[i].userId}`);
+            }
         }
         if (canPay) {
-            j ++;
+            j++;
         } else {
-            i ++;
+            i++;
         }
     }
     return debtorsPaymentOrder;
