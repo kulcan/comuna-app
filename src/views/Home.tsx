@@ -5,7 +5,7 @@ import { getVal } from "../utils/FormUtils";
 import useExpensesPoolService from "../services/ExpensesPoolService";
 import { MultiSelect } from "react-multi-select-component";
 import { Link } from "react-router-dom";
-import { AppPaths } from "../resources/Constants";
+import { AppMessages, AppPaths } from "../resources/Constants";
 
 const initialValues = {
   friendEmail: "",
@@ -33,9 +33,9 @@ function Home() {
       [field]: newVal,
     }));
   };
-  
+
   useEffect(() => {
-    console.log("email",user?.email, user?.displayName)
+    console.log("email", user?.email, user?.displayName)
     userService.getUserInfo(getVal(user?.email));
     expensesPoolService.getExpensesPoolsByUserId(getVal(user?.email));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,30 +139,27 @@ function Home() {
               <tbody>
                 {
                   Array.isArray(expensesPoolService.userPools) && expensesPoolService.userPools?.length > 0 ?
-                    expensesPoolService.userPools?.map((pool, index) => {
-                      return (
-                        <tr key={index}>
-                          <td>{pool.displayName}</td>
-                          <td>
-                            <button className="bg-green-500 hover:bg-green-700 text-white text-sm py-0.5 px-2 ml-2 rounded">
-                              <Link to={AppPaths.EXPENSE_POOL + `?id=${pool.id}`}>
-                                manage
-                              </Link>
-                            </button>
-                            <button 
-                              className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
-                              onClick={() => navigator.clipboard.writeText(getVal(pool.id))}>
-                                copy id
-                            </button>
-                            <button 
-                              className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
-                              onClick={() => expensesPoolService.deleteExpensePoolWithId(getVal(pool.id))}>
-                                delete
+                    expensesPoolService.userPools?.filter(pool => pool.isDeleted !== true)
+                      .reverse()
+                      .map((pool, index) => {
+                        return (
+                          <tr key={index}>
+                            <td>{pool.displayName}</td>
+                            <td>
+                              <button className="bg-green-500 hover:bg-green-700 text-white text-sm py-0.5 px-2 ml-2 rounded">
+                                <Link to={AppPaths.EXPENSE_POOL + `?id=${pool.id}`}>
+                                  manage
+                                </Link>
                               </button>
-                          </td>
-                        </tr>
-                      )
-                    }) : <tr><td>No pools to show :c</td></tr>
+                              <button
+                                className="bg-blue-500 hover:bg-blue-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
+                                onClick={() => navigator.clipboard.writeText(getVal(pool.id))}>
+                                copy id
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      }) : <tr><td>No pools to show :c</td></tr>
                 }
               </tbody>
             </table>
@@ -195,9 +192,14 @@ function Home() {
                         <tr key={index}>
                           <td>{friend}</td>
                           <td>
-                            <button 
+                            <button
                               className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
-                              onClick={() => userService.deleteUserFriend(getVal(user?.email), friend) }>
+                              onClick={() => {
+                                if (window.confirm(
+                                  `${AppMessages.SURE_TO_DELETE_FRIEND}\n${friend}`)) {
+                                  userService.deleteUserFriend(getVal(user?.email), friend)
+                                }
+                              }}>
                               delete
                             </button>
                           </td>

@@ -1,12 +1,12 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
 import useAuth from "../hooks/UseAuth"
 import useExpensesPoolService from "../services/ExpensesPoolService";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getVal } from "../utils/FormUtils";
 import { MultiSelect } from "react-multi-select-component";
 import { Timestamp } from "firebase/firestore";
 import { calculateContributions, calculateDebt, calculatePaymentOrder, getStr } from "../utils/ExpensesUtils";
-import { AppMessages } from "../resources/Constants";
+import { AppMessages, AppPaths } from "../resources/Constants";
 
 const initialValues = {
   paidBy: "",
@@ -29,6 +29,7 @@ function ExpensesPool() {
   const { user } = useAuth();
   const expensesPoolService = useExpensesPoolService();
 
+  const navigate = useNavigate()
 
   const [values, setValues] = useState(initialValues);
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -181,7 +182,7 @@ function ExpensesPool() {
                     <td className="px-6 py-4">
                       <button
                         className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
-                        onClick={() => { 
+                        onClick={() => {
                           if (window.confirm(
                             `${AppMessages.SURE_TO_DELETE_ITEM}\n${getStr(expense)}`)) {
                             expensesPoolService.deleteExpenseWithId(getVal(expense.expensePoolId), getVal(expense.id));
@@ -229,7 +230,7 @@ function ExpensesPool() {
                     </td>
                     <td className="px-6 py-4">
                       <pre>
-                        { values.debtorsPaymentOrder.get(userId) }
+                        {values.debtorsPaymentOrder.get(userId)}
                       </pre>
                     </td>
                   </tr>
@@ -241,6 +242,19 @@ function ExpensesPool() {
             }
           </tbody>
         </table>
+        <br />
+        <h2>Warning zone</h2>
+        <button
+          className="bg-red-500 hover:bg-red-700 text-white text-sm py-0.5 px-2 ml-2 rounded"
+          onClick={() => {
+            if (window.confirm(
+              `${AppMessages.SURE_TO_DELETE_POOL}`)) {
+              expensesPoolService.deleteExpensePoolWithId(getVal(expensesPoolService.currentPool?.id));
+              navigate(AppPaths.HOME);
+            }
+          }}>
+          delete this pool
+        </button>
       </div>
 
     </div>

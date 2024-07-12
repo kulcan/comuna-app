@@ -12,6 +12,8 @@ export class AppMessages {
     static UNEXPECTED_EXCEPTION = "An unexpected exception has occurred."
     static NOT_IMPLEMENTED = "Not implemented yet, contact administrator."
     static SURE_TO_DELETE_ITEM = "Are you sure you wish to delete this item?"
+    static SURE_TO_DELETE_POOL = "Are you sure you wish to delete this pool?"
+    static SURE_TO_DELETE_FRIEND = "Are you sure you wish to delete this friend?"
 
     static MapFirebaseErrors(error: Error) {
         // TODO: Firebase errors mapping by code
