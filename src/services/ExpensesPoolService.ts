@@ -8,6 +8,7 @@ export type ExpensesPool = {
     timeCreated?: Timestamp;
     lastUpdated?: Timestamp;
     participantsEmails?: string[];
+    isDeleted?: boolean;
 }
 
 export type Expense = {
@@ -35,7 +36,8 @@ const useExpensesPoolService = () => {
                 ...expensesPool,
                 id: docRef.id,
                 timeCreated: timeNow,
-                timeUpdated: timeNow
+                timeUpdated: timeNow,
+                isDeleted: false
             });
             return true;
         } catch (error) {
@@ -63,7 +65,24 @@ const useExpensesPoolService = () => {
         }
     }
 
-    const deleteExpensePoolWithId = async (expensesPoolId: string) => {
+    const deleteExpensePoolWithId = async (expensePoolId: string) => {
+        try {
+            const docRef = doc(db, `expenses-pools`, expensePoolId);
+            const timeNow = Timestamp.now();
+            await setDoc(docRef, {
+                timeUpdated: timeNow,
+                isDeleted: true
+            }, { merge: true });
+            return true;
+        } catch (error) {
+            console.error('Error deleting expense pool:', error);
+            return false;
+        }
+    }
+
+    // deletes object reference
+    // eslint-disable-next-line
+    const deleteExpensePoolDocWithId = async (expensesPoolId: string) => {
         try {
             await deleteDoc(doc(db, `expenses-pools/${expensesPoolId}`));
             setUserPools((prevData) => {
@@ -72,7 +91,7 @@ const useExpensesPoolService = () => {
             return true;
         } catch (error) {
             return false;
-        } 
+        }
     }
 
     const getExpensesPoolById = async (expensesPoolId: string) => {
@@ -102,7 +121,6 @@ const useExpensesPoolService = () => {
     }
 
     const addExpense = async (expensePoolId: string, expense: Expense) => {
-        
         try {
             const docRef = doc(collection(db, `expenses-pools/${expensePoolId}/expenses`));
             const newExp = {
@@ -145,7 +163,7 @@ const useExpensesPoolService = () => {
             return true;
         } catch (error) {
             return false;
-        } 
+        }
     }
 
     return {
